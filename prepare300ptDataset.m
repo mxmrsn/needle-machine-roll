@@ -73,10 +73,12 @@ for ii = 1:n
     pos = dataset(ii).pose_n(1:3,:);
     pos_normed = minMaxFeatureScaling(pos,bounds)';
         
-    X = [pos_normed(1:end-1,:), ax{ii}(1:end-1,:), sj2{ii}(1:end-1)', cj2{ii}(1:end-1)']';                   % axang-roll net (5DOF)
+    X = [pos_normed, ax{ii}, sj2{ii}', cj2{ii}']';                                                      % axang-roll net (5DOF)
+%     X = [pos_normed(1:end-1,:), ax{ii}(1:end-1,:), sj2{ii}(1:end-1)', cj2{ii}(1:end-1)']';                 % axang-roll net (5DOF) (t+1)  
 %     X = [pos_normed(1:end-1,:), sj2{ii}(1:end-1)', cj2{ii}(1:end-1)']';                                    % quat net (3DOF)
 
-    Y = [stheta(2:end), ctheta(2:end)]'; % predict angle (5DOF problem)
+    Y = [stheta, ctheta]'; % predict angle (5DOF problem)
+%     Y = [stheta(2:end), ctheta(2:end)]'; % predict angle (5DOF problem) (t+1)
 %     Y = [quat{ii}(2:end,:)]'; % predict quaternion (3DOF problem)
     
     gel_data_normed{ii}.j2 = j2{ii}';

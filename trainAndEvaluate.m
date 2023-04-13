@@ -79,7 +79,7 @@ for ii = 5 % test idx to visualize
 
         for kk = 1:length(R_test)
             dR = R_test(:,:,kk)*R_pred(:,:,kk)';
-            omega(kk) = acos((trace(dR)-1)/2);
+            omega(kk) = real(acos((trace(dR)-1)/2));
         end
 
         figure(h14);
@@ -227,7 +227,7 @@ function res = trainNetworkAndEvaluateAxangNet(training_data,validate_data,test_
 
         for kk = 1:length(R_test)
             dR = R_test(:,:,kk)*R_pred(:,:,kk)';
-            omega(kk) = acos((trace(dR)-1)/2);
+            omega(kk) = real(acos((trace(dR)-1)/2));
         end
         err{ii} = omega;
                 
