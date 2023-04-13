@@ -35,7 +35,7 @@ for ii = 1:length(data_use)
     end
 end
 
-kfold = 5; % number of kfold networks in ensemble
+kfold = 3; % number of kfold networks in ensemble
 for ii = 1:kfold
     clear train_data valid_data data_shuf
     tr_data = [training_data, validate_data];
@@ -58,16 +58,12 @@ end
 %% Assess Position Prediction on Test Dataset
 h14 = figure(14); h14.Color = 'w'; h14.Units = 'centimeters'; h14.Position(3:4) = [9 6];
 h15 = figure(15); h15.Color = 'w'; h15.Units = 'centimeters'; h15.Position = [35.9833    5.1065    9.6838   16.0602];
-% Loop through test data
-% for ii = 1:length(test_data)
+
+% for ii = 1:length(test_data) % Loop through all test data
 for ii = 5 % test idx to visualize
     for jj = 1:kfold
 
         ax = res{jj}.XTest{ii}(4:6,:);
-
-        for kk = 1:length(ax)
-            z_proj(kk) = dot(ax(:,kk),[0 0 1]);
-        end
 
         ang_pred{ii,jj} = res{jj}.ang_pred{ii};
         ang_test{ii,jj} = res{jj}.ang_test{ii};
@@ -81,17 +77,18 @@ for ii = 5 % test idx to visualize
 
         q_squared_chord_dist = quatChordalSquaredLoss(q_test,q_pred);
 
-        for kk = 1:length(q_test)
-            d_ang(kk) = norm(log(R_test(:,:,kk)*R_pred(:,:,kk)'));
+        for kk = 1:length(R_test)
+            dR = R_test(:,:,kk)*R_pred(:,:,kk)';
+            omega(kk) = acos((trace(dR)-1)/2);
         end
 
         figure(h14);
         subplot(2,1,1);
-        plot(rad2deg(err{ii,jj}),'r','LineWidth',1); hold on; grid on; grid minor;
+        plot(rad2deg(err{ii,jj}),'r','LineWidth',1); hold on; grid on;
         ylabel('$e_{\theta}$ (deg)'); xlim([0 length(ang_pred{ii,jj})]);
         title('Estimate Error');
         subplot(2,1,2);
-        p1 = plot(abs(rad2deg(ang_test{ii,jj})),'k','LineWidth',2); hold on; grid on; grid minor;
+        p1 = plot(abs(rad2deg(ang_test{ii,jj})),'k','LineWidth',2); hold on; grid on;
         plot(abs(rad2deg(ang_pred{ii,jj}))); xlim([0 length(ang_pred{ii,jj})]);
         ylabel('$\theta$ (deg)');
         legend({'Ground Truth','Estimate'})
@@ -100,7 +97,6 @@ for ii = 5 % test idx to visualize
         
         figure(h15);
         p = res{jj}.XTest{ii}(1:3,:).*75;
-%         for zz = 1:2:length(R_test)
         for zz = length(R_test)
             clf;
             plot3(p(1,1:zz),p(2,1:zz),p(3,1:zz),'k--'); hold on; grid on; 
@@ -145,7 +141,6 @@ for ii = 5 % test idx to visualize
     p2 = plot(mean_est,'b','LineWidth',2); grid on;
 
     legend([p1 p2],{'Ground Truth','Estimate'});
-%     figure(h14); clf;
 end
 
 %% Helper Functions
@@ -187,7 +182,7 @@ function res = trainNetworkAndEvaluateAxangNet(training_data,validate_data,test_
     layers = [...
               layers
               fullyConnectedLayer(outputSize)
-              regressionLayer];
+              regressionLayer]; % uses MSE loss function
     
     options = trainingOptions(...
                             'adam', ...
@@ -218,14 +213,23 @@ function res = trainNetworkAndEvaluateAxangNet(training_data,validate_data,test_
         net = resetState(net); % reset network for new sequence
         numTimeSteps = length(XTest{ii});
         for jj = 1:numTimeSteps
-            [net,YPred{ii}(:,jj)] = predictAndUpdateState(net,XTest{ii}(:,jj),'ExecutionEnvironment','gpu'); % ESTIMATE USING NET
+            [net,YPred{ii}(:,jj)] = predictAndUpdateState(net,XTest{ii}(:,jj),'ExecutionEnvironment','gpu'); % estimate using trained network
         end
         
         % Predict tip angle theta
         ang_test{ii} = atan2(YTest{ii}(1,:),YTest{ii}(2,:));
         ang_pred{ii} = atan2(YPred{ii}(1,:),YPred{ii}(2,:));
         
-        err{ii} = abs(ang_test{ii}) - abs(ang_pred{ii}); % in radians
+        ax = XTest{ii}(4:6,:);
+
+        R_pred = axang2rotm([ax; ang_pred{ii}]');
+        R_test = axang2rotm([ax; ang_test{ii}]');
+
+        for kk = 1:length(R_test)
+            dR = R_test(:,:,kk)*R_pred(:,:,kk)';
+            omega(kk) = acos((trace(dR)-1)/2);
+        end
+        err{ii} = omega;
                 
     end
     disp('Testing Done.');

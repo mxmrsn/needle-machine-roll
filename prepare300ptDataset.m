@@ -3,8 +3,8 @@
 close all; clc; clear all;
 %%
 % (SET) Flags
-PLOT = 1;
-SAVE_TO_FILE = 0;
+PLOT = 0;
+SAVE_TO_FILE = 1;
 
 filedir = pwd;
 load(append(filedir,'/data/pts1to60_v2.mat'),'pts1to60');
