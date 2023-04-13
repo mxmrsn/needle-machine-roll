@@ -1,6 +1,7 @@
 # Needle-Machine-Roll
-This network predicts the roll angle.
-## Demonstration of Data Prep, Network Training & Eval
+This network predicts the roll angle of the needle tip given 5DOF sensor measurements and actuation input.
+
+This repo is meant to be a basic demonstration of Data Prep, Network Training & Eval for this supervised learning problem.
 
 ## Data Prep
 The sequences consist of input vectors ```X``` that contain the encoded 5DOF measurement and actuation.
