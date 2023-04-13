@@ -47,11 +47,7 @@ h2 = figure(2); h2.Color = 'w'; h2.Units = 'centimeters'; %h2.Position(3:4) = [9
 
 for ii = 1:n
     
-%     u2{ii}  = dataset(ii).u(2,:);
     j2{ii}  = dataset(ii).act(2,:) - dataset(ii).act(2,1);
-%     j2_dot{ii} = [0, j2{ii}(2:end) - j2{ii}(1:end-1)];
-%     j2_dot_scaled{ii} = minMaxFeatureScaling(j2_dot{ii},[-0.5 0.5]);
-%     j22{ii} = j2{ii}.^2;
     sj2{ii} = sin(j2{ii});
     cj2{ii} = cos(j2{ii});
     quat{ii} = dataset(ii).pose_n(4:7,:)';
@@ -75,46 +71,7 @@ for ii = 1:n
 
     pos = dataset(ii).pose_n(1:3,:);
     pos_normed = minMaxFeatureScaling(pos,bounds)';
-    
-    % def noisy pos
-    pos_noise = mvnrnd([0 0 0],diag([ones(3,1).*(0.1)^2]),length(pos));
-    noisy_pos = pos+pos_noise';
-    
-    % def noisy axis from fd pos
-    noisy_axis = noisy_pos(:,2:end)-noisy_pos(:,1:end-1);
-    
-    dt = 1/40;
-    n = length(pos);
-    t = linspace(0,dt*n,n);
-    
-    tip_lin_vel = (pos(:,3:end)-pos(:,1:end-2))./(3*dt);
-    tip_lin_accel = tip_lin_vel(:,2:end)-tip_lin_vel(:,1:end-1);
-    
-    for jj = 2:length(pos)-1
-        R_before = quat2rotm(quat{ii}(jj-1,:));
-        R_curr = quat2rotm(quat{ii}(jj+1,:));
-        t_diff = t(jj+1)-t(jj-1);
-        axis_diff = real(deskew(logm(R_before'*R_curr)));
-        tip_ang_vel(jj-1,:) = axis_diff'./t_diff;
-    end
-    tip_ang_accel = tip_ang_vel(2:end,:)-tip_ang_vel(1:end-1,:);
-    
-    % compute and plot window averages of velocity
-    nWindows = 4;
-    for ww = 2:nWindows
-        R = quat2rotm(quat{ii});
-        for jj = 2:length(pos)-ww % TODO: should we compute with timestep jj = ww:length(pos)-ww? and jj-(jj-ww)?
-            t_diff = t(jj+ww)-t(jj-1); % TODO: we should log the time and not assume constant dt
-            tlv{ww}(jj-1,:) = ( pos(:,jj+ww)-pos(:,jj-1) )'./t_diff;
-            tav{ww}(jj-1,:) = ( real(deskew(logm(R(:,:,jj-1)'*R(:,:,jj+ww)))) )'./t_diff;
-        end
-        for jj = ww+1:length(pos)
-            t_diff = t(jj)-t(jj-ww);
-            tlv2{ww}(jj,:) = ( pos(:,jj)-pos(:,jj-ww) )'./t_diff;
-            tav2{ww}(jj,:) = ( real(deskew(logm(R(:,:,jj-ww)'*R(:,:,jj)))) )'./t_diff;
-        end
-    end
-    
+        
     X = [pos_normed(1:end-1,:), ax{ii}(1:end-1,:), sj2{ii}(1:end-1)', cj2{ii}(1:end-1)']';                   % axang-roll net (5DOF)
 %     X = [pos_normed(1:end-1,:), sj2{ii}(1:end-1)', cj2{ii}(1:end-1)']';                                    % quat net (3DOF)
 
@@ -198,27 +155,5 @@ function data_normed = minMaxFeatureScaling(data,bounds)
     
     data_normed = A + (num ./ den);
 end
-function data = reverseMinMaxScaling(data_normed,bounds)
-    data_min = bounds(:,1);
-    data_max = bounds(:,2);
-    
-    X_max = data_max.*ones(size(data_normed));
-    X_min = data_min.*ones(size(data_normed));
-    
-    a = 0;
-    b = 1;
-    A = a*ones(size(data_normed));
-    B = b*ones(size(data_normed));
-    
-    num = (data_normed - A) .* (X_max-X_min);
-    den = B - A;
-    
-    data = (num./den) + X_min;
-end
-function [ v ] = deskew( S )
-    v = [S(3,2) S(1,3) S(2,1)]'; % caret3 [3x3] -> [3x1]
-end
-
-
 
 

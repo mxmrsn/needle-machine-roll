@@ -35,7 +35,7 @@ for ii = 1:length(data_use)
     end
 end
 
-kfold = 10; % number of kfold networks in ensemble
+kfold = 5; % number of kfold networks in ensemble
 for ii = 1:kfold
     clear train_data valid_data data_shuf
     tr_data = [training_data, validate_data];
@@ -59,10 +59,14 @@ h14 = figure(14); h14.Color = 'w'; h14.Units = 'centimeters'; h14.Position(3:4) 
 h15 = figure(15); h15.Color = 'w'; h15.Units = 'centimeters'; h15.Position = [35.9833    5.1065    9.6838   16.0602];
 % Loop through test data
 % for ii = 1:length(test_data)
-for ii = 11 % test idx to visualize
+for ii = 5 % test idx to visualize
     for jj = 1:kfold
 
         ax = res{jj}.XTest{ii}(4:6,:);
+
+        for kk = 1:length(ax)
+            z_proj(kk) = dot(ax(:,kk),[0 0 1]);
+        end
 
         ang_pred{ii,jj} = res{jj}.ang_pred{ii};
         ang_test{ii,jj} = res{jj}.ang_test{ii};
@@ -243,7 +247,6 @@ function err = quatChordalSquaredLoss(q_gt,q_est)
     end
 end
 function drawCoordFrame(T,sc,str)
-
     R = T(1:3,1:3);
     p = T(1:3,4);
     
@@ -254,5 +257,4 @@ function drawCoordFrame(T,sc,str)
     quiver3(p(1),p(2),p(3),sc*x_axis(1),sc*x_axis(2),sc*x_axis(3),str(1),'LineWidth',2); hold on; grid on;% draw x
     quiver3(p(1),p(2),p(3),sc*y_axis(1),sc*y_axis(2),sc*y_axis(3),str(2),'LineWidth',2);
     quiver3(p(1),p(2),p(3),sc*z_axis(1),sc*z_axis(2),sc*z_axis(3),str(3),'LineWidth',2);
-
 end
