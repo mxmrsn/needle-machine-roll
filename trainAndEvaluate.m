@@ -54,6 +54,7 @@ for ii = 1:kfold
     ii
     res{ii} = trainNetworkAndEvaluateAxangNet(train_data,valid_data,test_data,width,depth,x_dim,y_dim);
 end
+
 %% Assess Position Prediction on Test Dataset
 h14 = figure(14); h14.Color = 'w'; h14.Units = 'centimeters'; h14.Position(3:4) = [9 6];
 h15 = figure(15); h15.Color = 'w'; h15.Units = 'centimeters'; h15.Position = [35.9833    5.1065    9.6838   16.0602];

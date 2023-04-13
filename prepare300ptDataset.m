@@ -2,10 +2,11 @@
 
 close all; clc; clear all;
 %%
-PLOT = 0;
-SAVE_TO_FILE = 1;
+% (SET) Flags
+PLOT = 1;
+SAVE_TO_FILE = 0;
 
-filedir = pwd; % make sure you are in the 'code' folder to run
+filedir = pwd;
 load(append(filedir,'/data/pts1to60_v2.mat'),'pts1to60');
 load(append(filedir,'/data/pts61to120_v2.mat'),'pts61to120_v2');
 load(append(filedir,'/data/pts121to200_v2.mat'),'pts121to200');
@@ -120,9 +121,10 @@ for ii = 1:n
         ylabel('Actuation Angle (deg)');
 
         figure(2);
-        plot(atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:))-atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:)),'Color','r','LineWidth',2);
+        plot(atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:))-atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:)),'Color','r','LineWidth',2); grid on;
         xlabel('Timestamp');
-        ylabel('Diff');
+        title('\theta-\alpha')
+        ylabel('\theta-\alpha')
 
     end
 end
