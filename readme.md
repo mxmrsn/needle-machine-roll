@@ -1,5 +1,6 @@
 # Needle-Machine-Roll
 This network predicts the roll angle of the needle tip given 5DOF sensor measurements and actuation input.
+This uses the same methods as presented in [ISER2020 Paper](https://research.vuse.vanderbilt.edu/MEDLab/sites/default/files/papers/Emerson2020_ISER.pdf).
 
 This repo is meant to be a basic demonstration of Data Prep, Network Training & Eval for this supervised learning problem.
 
@@ -18,5 +19,3 @@ The 'training' dataset is then partitioned again ```k```-times to train an ensem
 ![ensemble](resources/ensemble.png)
 
 *Note: The above is all offline analysis. To deploy this network online (under closed-loop control), the model should be deployed in C++. This can be done with Matlab Coder and the functionality can be implemented within a C++ class. Note that the network can be trained to predict at time ```t``` or for time ```t+1```, depending on how the observer is implemented in the control loop.
-
-[ISER2020 Paper](https://research.vuse.vanderbilt.edu/MEDLab/sites/default/files/papers/Emerson2020_ISER.pdf)
