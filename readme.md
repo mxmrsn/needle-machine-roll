@@ -1,6 +1,7 @@
 # Needle-Machine-Roll
 This network predicts the roll angle of the needle tip given 5DOF sensor measurements and actuation input.
-This uses the same methods as presented in [ISER2020 Paper](https://research.vuse.vanderbilt.edu/MEDLab/sites/default/files/papers/Emerson2020_ISER.pdf).
+This uses the same methods as presented in our ISER2020 paper: [A Recurrent Neural Network Approach to
+Roll Estimation for Needle Steering](https://research.vuse.vanderbilt.edu/MEDLab/sites/default/files/papers/Emerson2020_ISER.pdf).
 
 This repo is meant to be a basic demonstration of Data Prep, Network Training & Eval for this supervised learning problem.
 
