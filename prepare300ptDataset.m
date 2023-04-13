@@ -6,11 +6,10 @@ close all; clc; clear all;
 PLOT = 0;
 SAVE_TO_FILE = 1;
 
-filedir = pwd;
-load(append(filedir,'/data/pts1to60_v2.mat'),'pts1to60');
-load(append(filedir,'/data/pts61to120_v2.mat'),'pts61to120_v2');
-load(append(filedir,'/data/pts121to200_v2.mat'),'pts121to200');
-load(append(filedir,'/data/pts201to300_v2.mat'),'pts201to300');
+load('data/pts1to60_v2.mat','pts1to60');
+load('data/pts61to120_v2.mat','pts61to120_v2');
+load('data/pts121to200_v2.mat','pts121to200');
+load('data/pts201to300_v2.mat','pts201to300');
 
 gel_data(1:60) = pts1to60;
 gel_data(61:120) = pts61to120_v2;
