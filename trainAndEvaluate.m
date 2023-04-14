@@ -56,11 +56,11 @@ for ii = 1:kfold
 end
 
 %% Assess Position Prediction on Test Dataset
-h14 = figure(14); h14.Color = 'w'; h14.Units = 'centimeters'; h14.Position(3:4) = [9 6];
-h15 = figure(15); h15.Color = 'w'; h15.Units = 'centimeters'; h15.Position = [35.9833    5.1065    9.6838   16.0602];
+h14 = figure(14); h14.Color = 'w'; h14.Units = 'centimeters'; h14.Position(3:4) = [9 6]; clf;
+h15 = figure(15); h15.Color = 'w'; h15.Units = 'centimeters'; h15.Position = [35.9833    5.1065    9.6838   16.0602]; clf;
 
 % for ii = 1:length(test_data) % Loop through all test data
-for ii = 5 % test idx to visualize
+for ii = 2 % test idx to visualize
     for jj = 1:kfold
 
         ax = res{jj}.XTest{ii}(4:6,:);
@@ -71,16 +71,16 @@ for ii = 5 % test idx to visualize
 
         R_pred = axang2rotm([ax; ang_pred{ii,jj}]');
         R_test = axang2rotm([ax; ang_test{ii,jj}]');
-
-        q_pred = rotm2quat(R_pred);
-        q_test = rotm2quat(R_test);
-
-        q_squared_chord_dist = quatChordalSquaredLoss(q_test,q_pred);
-
-        for kk = 1:length(R_test)
-            dR = R_test(:,:,kk)*R_pred(:,:,kk)';
-            omega(kk) = real(acos((trace(dR)-1)/2));
-        end
+% 
+%         q_pred = rotm2quat(R_pred);
+%         q_test = rotm2quat(R_test);
+% 
+%         q_squared_chord_dist = quatChordalSquaredLoss(q_test,q_pred);
+% 
+%         for kk = 1:length(R_test)
+%             dR = R_test(:,:,kk)*R_pred(:,:,kk)';
+%             omega(kk) = real(acos((trace(dR)-1)/2)); % radians
+%         end
 
         figure(h14);
         subplot(2,1,1);
@@ -98,7 +98,7 @@ for ii = 5 % test idx to visualize
         figure(h15);
         p = res{jj}.XTest{ii}(1:3,:).*75;
         for zz = length(R_test)
-            clf;
+%             clf;
             plot3(p(1,1:zz),p(2,1:zz),p(3,1:zz),'k--'); hold on; grid on; 
             T_gt = [R_test(:,:,zz), p(:,zz); zeros(1,3) 1];
             T_est = [R_pred(:,:,zz), p(:,zz); zeros(1,3) 1];
@@ -131,17 +131,20 @@ for ii = 5 % test idx to visualize
     figure(h14);
     subplot(2,1,1);
     fill_between_lines = @(X,Y1,Y2,col) fill( [X fliplr(X)],  [Y1 fliplr(Y2)], 0.3*col, 'FaceAlpha', 0.3, 'EdgeColor', col); hold on;
-    nsigmas = 2;
+    nsigmas = 2; % n stdevs to plot confidence shading
     fill_between_lines(1:size(errn,2), mean_err+nsigmas.*sig_err, mean_err-nsigmas.*sig_err,[1 0 0]);
     plot(mean_err,'r','LineWidth',2); grid on;
+    ylim([-20 200]);
     
     subplot(2,1,2);
     fill_between_lines = @(X,Y1,Y2,col) fill( [X fliplr(X)],  [Y1 fliplr(Y2)], 0.3*col, 'FaceAlpha', 0.3, 'EdgeColor', col); hold on;
-    fill_between_lines(1:size(est,2), mean_est+1.*sig_est, mean_est-1.*sig_est,[0 0 1]);
+    fill_between_lines(1:size(est,2), mean_est+nsigmas.*sig_est, mean_est-nsigmas.*sig_est,[0 0 1]);
     p2 = plot(mean_est,'b','LineWidth',2); grid on;
 
     legend([p1 p2],{'Ground Truth','Estimate'});
 end
+subplot(2,1,1); grid minor;
+subplot(2,1,2); grid minor;
 
 %% Helper Functions
 function res = trainNetworkAndEvaluateAxangNet(training_data,validate_data,test_data,width,depth,x_dim,y_dim)
@@ -229,8 +232,7 @@ function res = trainNetworkAndEvaluateAxangNet(training_data,validate_data,test_
             dR = R_test(:,:,kk)*R_pred(:,:,kk)';
             omega(kk) = real(acos((trace(dR)-1)/2));
         end
-        err{ii} = omega;
-                
+        err{ii} = omega;                
     end
     disp('Testing Done.');
 
