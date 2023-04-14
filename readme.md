@@ -11,6 +11,12 @@ The network is tasked with predicting a target vector ```Y``` that contains the 
 
 The prepared dataset used for ISER2020 Experiments is contained in the ```data/``` folder. If you wish to modify the dataset input/output vectors, you can do so in ```prepare300ptDataset.m```.
 
+![dataset-sequence](resources/dataset-sequence.png)
+
+Another way to interpret the problem, is that the network learns to predict the difference angle between the actuator and the tip, as a function of insertion length. The network learns when actuation is transmitted to the tip, and when the actuation is within some "deadband".
+
+![deadband](resources/diff-ang.png)
+
 ## Training Network & Evaluation
 This code runs in MATLAB with help from the Deep Learning Toolbox. 
 
