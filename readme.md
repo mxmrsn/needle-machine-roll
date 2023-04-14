@@ -1,6 +1,8 @@
 # Needle-Machine-Roll
 This network predicts the roll angle of the needle tip given 5DOF sensor measurements and actuation input.
-This uses the same methods as presented in our ISER2020 paper: [A Recurrent Neural Network Approach to
+This uses the same methods as presented in our ISER2020 paper: 
+
+[A Recurrent Neural Network Approach to
 Roll Estimation for Needle Steering](https://research.vuse.vanderbilt.edu/MEDLab/sites/default/files/papers/Emerson2020_ISER.pdf).
 
 This repo is meant to be a basic demonstration of Data Prep, Network Training & Eval for this supervised learning problem.
@@ -25,4 +27,19 @@ The 'training' dataset is then partitioned again ```k```-times to train an ensem
 
 ![ensemble](resources/ensemble.png)
 
-*Note: The above is all offline analysis. To deploy this network online (under closed-loop control), the model should be deployed in C++. This can be done with Matlab Coder and the functionality can be implemented within a C++ class. Note that the network can be trained to predict at time ```t``` or for time ```t+1```, depending on how the observer is implemented in the control loop.
+*Note:* 
+The above is all offline analysis. To deploy this network online (under closed-loop control), the model should be deployed in C++. This can be done with Matlab Coder and the functionality can be implemented within a C++ class. Note that the network can be trained to predict at time ```t``` or for time ```t+1```, depending on how the observer is implemented in the control loop.
+
+## Citing
+If you use this in your research, please use the following BibTeX entry.
+```shell
+@inproceedings{Emerson2020,
+    title = {{A Recurrent Neural Network Approach to Roll Estimation for Needle Steering}},
+    year = {2021},
+    booktitle = {International Symposium on Experimental Robotics},
+    author = {Emerson, Maxwell and Ferguson, James M. and Ertop, Tayfun Efe and Rox, Margaret and Granna, Josephine and Lester, Michael and Maldonado, Fabien and Gillaspie, Erin A. and Alterovitz, Ron and III., Robert J. Webster and Kuntz, Alan},
+    pages = {1--8},
+    url = {http://arxiv.org/abs/2101.04856},
+    arxivId = {2101.04856}
+}
+```
