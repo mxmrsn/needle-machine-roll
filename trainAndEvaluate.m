@@ -71,16 +71,6 @@ for ii = 2 % test idx to visualize
 
         R_pred = axang2rotm([ax; ang_pred{ii,jj}]');
         R_test = axang2rotm([ax; ang_test{ii,jj}]');
-% 
-%         q_pred = rotm2quat(R_pred);
-%         q_test = rotm2quat(R_test);
-% 
-%         q_squared_chord_dist = quatChordalSquaredLoss(q_test,q_pred);
-% 
-%         for kk = 1:length(R_test)
-%             dR = R_test(:,:,kk)*R_pred(:,:,kk)';
-%             omega(kk) = real(acos((trace(dR)-1)/2)); % radians
-%         end
 
         figure(h14);
         subplot(2,1,1);

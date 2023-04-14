@@ -3,8 +3,8 @@
 close all; clc; clear all;
 %%
 % (SET) Flags
-PLOT = 0;
-SAVE_TO_FILE = 1;
+PLOT = 1;
+SAVE_TO_FILE = 0;
 
 load('data/pts1to60_v2.mat','pts1to60');
 load('data/pts61to120_v2.mat','pts61to120_v2');
@@ -112,20 +112,23 @@ for ii = 1:n
         zlabel('$n_z$','Interpreter','Latex'); view(3);
 
         subplot(1,3,2);
-        plot(atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:)),'LineWidth',2); grid on;
+        plot(atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:)),'m','LineWidth',2); grid on;
         xlabel('Timestamp');
-        ylabel('Roll Angle (deg)');
+        ylabel('Tip Roll Angle (deg)');
 
         subplot(1,3,3);
-        plot(atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:)),'LineWidth',2); grid on;
+        plot(atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:)),'b','LineWidth',2); grid on;
         xlabel('Timestamp');
         ylabel('Actuation Angle (deg)');
 
-        figure(2);
-        plot(atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:))-atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:)),'Color','r','LineWidth',2); grid on;
+        figure(h2);
+        errang = atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:))-atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:)); 
+        toplot = minDistAngs(errang);
+        plot(toplot,'Color','r','LineWidth',2); grid on;
+%         plot(atan2d(gel_data_normed{ii}.X(7,:),gel_data_normed{ii}.X(8,:))-atan2d(gel_data_normed{ii}.Y(1,:),gel_data_normed{ii}.Y(2,:)),'Color','r','LineWidth',2); grid on;
         xlabel('Timestamp');
-        title('\theta-\alpha')
-        ylabel('\theta-\alpha')
+        title('Tip Angle - Actuator Angle')
+        ylabel('$\theta-\alpha$ (deg)')
 
     end
 end
@@ -158,5 +161,16 @@ function data_normed = minMaxFeatureScaling(data,bounds)
     
     data_normed = A + (num ./ den);
 end
-
+function md = minDistAngs(ang)
+% for angles -180<=\theta<=180, removes/adds multiples of 2*pi
+    for ii = 1:length(ang)
+        if (ang(ii) > 180)
+            md(ii) = ang(ii) - 360;
+        elseif (ang(ii) < -180)
+            md(ii) = ang(ii) + 360;
+        else
+            md(ii) = ang(ii);
+        end
+    end
+end
 
